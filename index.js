@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { sequelize, testConnection } from './src/config/database.js';
 
+import './src/models/associations.js';
+
 dotenv.config();
 
 const app = express();
@@ -11,8 +13,8 @@ const app = express();
 testConnection();
 
 app.use(cors());
-app.use(express.json()); 
-app.use(cookieParser()); 
+app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
   res.send('¡Hola, mundo! El servidor está funcionando.');
@@ -20,6 +22,11 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+sequelize.sync({ force: false }).then(() => {
+  console.log('Base de datos y tablas sincronizadas.');
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+  });
+}).catch(error => {
+  console.error('No se pudo sincronizar la base de datos:', error);
 });
