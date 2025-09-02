@@ -6,6 +6,8 @@ import { sequelize, testConnection } from './src/config/database.js';
 
 import './src/models/associations.js';
 
+import authRoutes from './src/routes/auth.routes.js';
+
 dotenv.config();
 
 const app = express();
@@ -15,6 +17,8 @@ testConnection();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('¡Hola, mundo! El servidor está funcionando.');
