@@ -1,23 +1,20 @@
 import { Router } from 'express';
-import { register, login, getProfile, updateProfile, logout } from '../controllers/auth.controller.js';
+import { getAllUsers, getUserById, updateUser, deleteUser } from '../controllers/user.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { adminMiddleware } from '../middlewares/admin.middleware.js';
 
 const router = Router();
 
-// --- Rutas Públicas (no requieren token) ---
-router.post('/register', register);
-router.post('/login', login);
+// GET /api/users -> Listar todos los usuarios
+router.get('/', [authMiddleware, adminMiddleware], getAllUsers);
 
-// Obtener el perfil del usuario autenticado
-// Ruta: GET /api/auth/profile
-router.get('/profile', authMiddleware, getProfile);
+// GET /api/users/:id -> Obtener un usuario por su ID
+router.get('/:id', [authMiddleware, adminMiddleware], getUserById);
 
-// Actualizar el perfil del usuario autenticado
-// Ruta: PUT /api/auth/profile
-router.put('/profile', authMiddleware, updateProfile);
+// PUT /api/users/:id -> Actualizar un usuario por su ID
+router.put('/:id', [authMiddleware, adminMiddleware], updateUser);
 
-// Cerrar la sesión del usuario
-// Ruta: POST /api/auth/logout
-router.post('/logout', authMiddleware, logout);
+// DELETE /api/users/:id -> Eliminar (lógicamente) un usuario por su ID
+router.delete('/:id', [authMiddleware, adminMiddleware], deleteUser);
 
 export default router;
