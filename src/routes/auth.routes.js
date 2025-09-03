@@ -1,20 +1,28 @@
+// src/routes/auth.routes.js
 import { Router } from 'express';
-import { getAllUsers, getUserById, updateUser, deleteUser } from '../controllers/user.controller.js';
+import {
+  register,
+  login,
+  getProfile,
+  updateProfile,
+  logout
+} from '../controllers/auth.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { adminMiddleware } from '../middlewares/admin.middleware.js';
+import {
+  registerValidator,
+  loginValidator,
+  updateProfileValidator
+} from '../validators/auth.validator.js';
 
 const router = Router();
 
-// GET /api/users -> Listar todos los usuarios
-router.get('/', [authMiddleware, adminMiddleware], getAllUsers);
+// --- Rutas Públicas ---
+router.post('/register', registerValidator, register);
+router.post('/login', loginValidator, login);
 
-// GET /api/users/:id -> Obtener un usuario por su ID
-router.get('/:id', [authMiddleware, adminMiddleware], getUserById);
-
-// PUT /api/users/:id -> Actualizar un usuario por su ID
-router.put('/:id', [authMiddleware, adminMiddleware], updateUser);
-
-// DELETE /api/users/:id -> Eliminar (lógicamente) un usuario por su ID
-router.delete('/:id', [authMiddleware, adminMiddleware], deleteUser);
+// --- Rutas Protegidas ---
+router.get('/profile', authMiddleware, getProfile);
+router.put('/profile', [authMiddleware, updateProfileValidator], updateProfile);
+router.post('/logout', authMiddleware, logout);
 
 export default router;

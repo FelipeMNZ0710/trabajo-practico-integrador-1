@@ -1,3 +1,4 @@
+// src/routes/tag.routes.js
 import { Router } from 'express';
 import {
   createTag,
@@ -9,21 +10,24 @@ import {
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { adminMiddleware } from '../middlewares/admin.middleware.js';
 
+// --- Importamos los validadores ---
+import { createTagValidator, updateTagValidator } from '../validators/tag.validator.js';
+
 const router = Router();
 
-// POST /api/tags -> Crear una nueva etiqueta (Admin)
-router.post('/', [authMiddleware, adminMiddleware], createTag);
-
-// GET /api/tags -> Listar todas las etiquetas (Usuario autenticado)
+// ... (rutas GET sin cambios) ...
 router.get('/', authMiddleware, getAllTags);
-
-// GET /api/tags/:id -> Obtener una etiqueta por su ID (Admin)
 router.get('/:id', [authMiddleware, adminMiddleware], getTagById);
 
-// PUT /api/tags/:id -> Actualizar una etiqueta por su ID (Admin)
-router.put('/:id', [authMiddleware, adminMiddleware], updateTag);
+// --- Actualizamos las rutas POST y PUT ---
 
-// DELETE /api/tags/:id -> Eliminar una etiqueta por su ID (Admin)
+// POST /api/tags -> Crear una nueva etiqueta (Admin)
+router.post('/', [authMiddleware, adminMiddleware, createTagValidator], createTag);
+
+// PUT /api/tags/:id -> Actualizar una etiqueta por su ID (Admin)
+router.put('/:id', [authMiddleware, adminMiddleware, updateTagValidator], updateTag);
+
+// ... (ruta DELETE sin cambios) ...
 router.delete('/:id', [authMiddleware, adminMiddleware], deleteTag);
 
 export default router;

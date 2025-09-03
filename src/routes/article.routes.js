@@ -1,3 +1,4 @@
+// src/routes/article.routes.js
 import { Router } from 'express';
 import {
   createArticle,
@@ -12,29 +13,26 @@ import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { ownerMiddleware } from '../middlewares/owner.middleware.js';
 import Article from '../models/Article.js';
 
+// --- Importamos los validadores ---
+import { createArticleValidator, updateArticleValidator } from '../validators/article.validator.js';
+
 const router = Router();
 
-// --- Rutas para Artículos ---
-
-// POST /api/articles -> Crear un nuevo artículo (Usuario autenticado)
-router.post('/', authMiddleware, createArticle);
-
-// GET /api/articles -> Listar todos los artículos publicados (Usuario autenticado)
+// ... (rutas GET sin cambios) ...
 router.get('/', authMiddleware, getAllPublishedArticles);
-
-// GET /api/articles/user -> Listar artículos del usuario logueado (Usuario autenticado)
 router.get('/user', authMiddleware, getMyArticles);
-
-// GET /api/articles/user/:id -> Obtener un artículo específico del usuario logueado (Usuario autenticado)
 router.get('/user/:id', authMiddleware, getMyArticleById);
-
-// GET /api/articles/:id -> Obtener un artículo publicado por su ID (Usuario autenticado)
 router.get('/:id', authMiddleware, getArticleById);
 
-// PUT /api/articles/:id -> Actualizar un artículo (Solo Propietario o Admin)
-router.put('/:id', [authMiddleware, ownerMiddleware(Article)], updateArticle);
+// --- Actualizamos las rutas POST y PUT ---
 
-// DELETE /api/articles/:id -> Eliminar un artículo (Solo Propietario o Admin)
+// POST /api/articles -> Crear un nuevo artículo
+router.post('/', [authMiddleware, createArticleValidator], createArticle);
+
+// PUT /api/articles/:id -> Actualizar un artículo
+router.put('/:id', [authMiddleware, ownerMiddleware(Article), updateArticleValidator], updateArticle);
+
+// ... (ruta DELETE sin cambios) ...
 router.delete('/:id', [authMiddleware, ownerMiddleware(Article)], deleteArticle);
 
 export default router;
