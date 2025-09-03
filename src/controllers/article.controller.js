@@ -102,3 +102,38 @@ export const getMyArticleById = async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor.', error: error.message });
   }
 };
+
+/**
+ * Controlador para actualizar un artículo.
+ */
+export const updateArticle = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, excerpt, status } = req.body;
+    const article = await Article.findByPk(id);
+    if (!article) {
+      return res.status(404).json({ message: 'Artículo no encontrado.' });
+    }
+    await article.update({ title, content, excerpt, status });
+    res.status(200).json({ message: 'Artículo actualizado exitosamente.', article });
+  } catch (error) {
+    res.status(500).json({ message: 'Error interno del servidor.', error: error.message });
+  }
+};
+
+/**
+ * Controlador para eliminar (lógicamente) un artículo.
+ */
+export const deleteArticle = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const article = await Article.findByPk(id);
+    if (!article) {
+      return res.status(404).json({ message: 'Artículo no encontrado.' });
+    }
+    await article.destroy();
+    res.status(200).json({ message: 'Artículo eliminado (lógicamente) exitosamente.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error interno del servidor.', error: error.message });
+  }
+};
